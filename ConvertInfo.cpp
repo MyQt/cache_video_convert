@@ -167,7 +167,7 @@ bool Video_Convert::parseJson(QString filePath, st_convert_info &stConvertInfo)
     QJsonObject jsonObject = document.object();
     if (filePath.contains("entry.json")) {
         QString title = jsonObject["title"].toString();
-        stConvertInfo._title = title;
+        stConvertInfo._title = validateTitle(title);
         if (jsonObject.contains((QStringLiteral("page_data")))) {
             QJsonValue jsonValueList = jsonObject.value(QStringLiteral("page_data"));
             QJsonObject item = jsonValueList.toObject();
@@ -223,11 +223,12 @@ void Video_Convert::run()
        }
        // 执行ffmpeg转码操作
        QString outFile;
-       if ( video_info._episode_index > 0) {
-           outFile = outDir + '/' + QString::number(video_info._episode_index) + '.' + video_info._part;
+       QString fileName = video_info._part=="" ? video_info._title : video_info._part;
+       if ( video_info._episode_index > 0 && video_info._part!="" && video_info._part != video_info._title) {
+           outFile = outDir + '/' + QString::number(video_info._episode_index) + '.' + fileName;
        }
        else {
-           outFile = outDir +'/' + video_info._part;
+           outFile = outDir +'/' + fileName;
        }
 
        qDebug()<<outFile+".mp4开始合并";

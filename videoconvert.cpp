@@ -31,7 +31,7 @@ void VideoConvert::on_btn_choice_load_clicked()
    m_convert.traversalSource(filePath);
    QStringList strList;
    foreach(st_convert_info info, m_convert.m_convertList) {
-       if (!info._part.isEmpty()) {
+       if (!info._part.isEmpty() && info._part != info._title) {
            strList.append(info._title + "/" + info._part);
        } else {
            strList.append(info._title);

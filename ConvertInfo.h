@@ -65,6 +65,4 @@ public:
     st_convert_info     stConvertInfo;
     int m_floor; // 层数
     QString m_outDir;
-    QThread m_thread; // 转码工作另开线程操作
-
 };
