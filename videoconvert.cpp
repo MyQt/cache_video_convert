@@ -3,6 +3,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QModelIndex>
+#include <QProcess>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 VideoConvert::VideoConvert(QWidget *parent) :
     QWidget(parent),
@@ -114,4 +117,28 @@ void VideoConvert::UpdateUI(int type, QString strMessage, int index)
     ui->textBrowser_ConsoleOut->append(strMessage+"\n");
     ui->progress_convert->setValue(index+1);
     QApplication::processEvents();
+}
+
+void VideoConvert::on_pushButton_update_clicked()
+{
+    QString appPath = QCoreApplication::applicationFilePath();
+    QString appVersion = QCoreApplication::applicationVersion();
+    QString appUpdateUrl = "https://bdcm02.baidupcs.com/file/ce6d8d082oece80916f7760cd3805fc8?bkt=en-19901565518762c94cec07a0b03ae6a1d7a8f2bf217c1c9e16574ca5d7a413d24893c1bbc14a364966e060a8f7159eaccfb0104cefc4c67c70922261162e7736&fid=34235042-250528-625690804600404&time=1640499177&sign=FDTAXUbGERLQlBHSKfWqi-DCb740ccc5511e5e8fedcff06b081203-uI6Na1gB%2BDYTtyiPeb2pKh%2BR3zA%3D&to=94&size=781&sta_dx=781&sta_cs=0&sta_ft=json&sta_ct=0&sta_mt=0&fm2=MH%2CBaoding%2CAnywhere%2C%2Chenan%2Ccmnet&ctime=1640499172&mtime=1640499172&resv0=0&resv1=0&resv2=rlim&resv3=5&resv4=781&vuk=34235042&iv=0&htype=&randtype=&tkbind_id=0&newver=1&newfm=1&secfm=1&flow_ver=3&pkey=en-7d17da779c4799ad865e85e1f53e36cdcaf4211f9a9819adac6fece41a76f711a678c9a293446597de6b22a8b5c320e803c8ac5ad22325de305a5e1275657320&sl=68616270&expires=8h&rt=pr&r=742848586&vbdid=1349948145&fin=soft_update.json&fn=soft_update.json&rtype=1&dp-logid=269510901731973219&dp-callid=0.1&hps=1&tsl=200&csl=200&fsl=0&csign=AqO5hwEFqnnKG3HD7m4iIlP2Fs8%3D&so=0&ut=6&uter=4&serv=0&uc=3177242081&ti=d07a7c9c0a19b1698a8605576e453a30126c1fcf29a50075305a5e1275657320&hflag=30&from_type=1&adg=c_2e058c9cc885e91968c23b3dc4461b10&reqlabel=250528_f_8da94a6a68026f16d165e5f718fb7868_-1_91dd180898f20c2a5cd139f029763f12&by=themis";
+    QProcess process;
+    QString strExe("");
+    strExe = "UpdateSoft.exe";
+
+    QJsonObject json;
+    json.insert("appName", windowTitle());
+    json.insert("appPath", appPath);
+    json.insert("appVersion", appVersion);
+    json.insert("appUpdateUrl", appUpdateUrl);
+    QJsonDocument document;
+    document.setObject(json);
+    QByteArray byteArray = document.toJson(QJsonDocument::Compact);
+
+    QStringList arguments;
+    arguments << byteArray;
+    process.startDetached(strExe, arguments);
+
 }

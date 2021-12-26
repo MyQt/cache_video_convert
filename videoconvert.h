@@ -28,6 +28,8 @@ private slots:
     void on_btn_go_clicked();
 
     void UpdateUI(int type, QString strMessage, int index);
+    void on_pushButton_update_clicked();
+
 private:
     Ui::VideoConvert *ui;
     QStringListModel m_itemModel;
