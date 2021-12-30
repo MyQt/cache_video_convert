@@ -41,7 +41,9 @@ void VideoConvert::on_btn_choice_load_clicked()
            strList.append(info._title);
        }
    }
-
+   std::sort(strList.begin(),strList.end(),[](const QString& s1, const QString& s2) {
+       return  s1 < s2;
+   });
    m_itemModel.setStringList(strList);
    ui->list_file->setModel(&m_itemModel);
    if (strList.length() > 0) {
@@ -92,9 +94,11 @@ void VideoConvert::on_btn_go_clicked()
 void VideoConvert::UpdateUI(int type, QString strMessage, int index)
 {
     if (type == 1 || type == 2) {
-        if (type == 2) {
-            ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(index, 0)));
+        ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(index, 0)));
+        if (type == 2) {  
+            ui->progress_convert->setValue(index+1);
         }
+
         setWindowTitle(strMessage);
 
     } else if(type == 3) {
@@ -105,6 +109,7 @@ void VideoConvert::UpdateUI(int type, QString strMessage, int index)
             // 删除源目录文件
             m_convert.clearDir(ui->label_dir_load->text());
         }     
+        ui->progress_convert->setValue(index+1);
     } else if (type == 4) { // 格式错误
         QMessageBox::information(this, "警告!致命错误!", "视频格式"+strMessage+"不支持,程序即将退出");
         QApplication::exit();
@@ -121,7 +126,7 @@ void VideoConvert::UpdateUI(int type, QString strMessage, int index)
         return;
     }
     ui->textBrowser_ConsoleOut->append(strMessage+"\n");
-    ui->progress_convert->setValue(index+1);
+
     QApplication::processEvents();
 }
 
