@@ -52,6 +52,7 @@ void VideoConvert::on_btn_choice_load_clicked()
        ui->progress_convert->setValue(0);
        ui->progress_convert->setMaximum(strList.length());
        ui->chk_delete_source->setEnabled(true);
+       ui->chk_to_mp3->setEnabled(true);
    } else {
        ui->btn_go->setDisabled(true);
        ui->btn_go->setText("没有转码文件");
@@ -83,6 +84,8 @@ void VideoConvert::on_btn_go_clicked()
     ui->btn_go->setText("转换中");
     ui->btn_go->setDisabled(true);
     ui->chk_delete_source->setDisabled(true);
+    ui->chk_to_mp3->setDisabled(true);
+    m_convert.setIs2MP3(ui->chk_to_mp3->isChecked());
     m_convert.start();
 }
 
@@ -91,6 +94,7 @@ void VideoConvert::UpdateUI(int type, QString strMessage, int index)
     if (type == 1 || type == 2) {
         ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(index, 0)));
         setWindowTitle(strMessage);
+
     } else if(type == 3) {
         ui->btn_go->setText("全部转换完成");
         ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(m_convert.m_convertList.length()-1, 0)));
@@ -98,8 +102,7 @@ void VideoConvert::UpdateUI(int type, QString strMessage, int index)
         if (ui->chk_delete_source->isChecked()) {
             // 删除源目录文件
             m_convert.clearDir(ui->label_dir_load->text());
-            ui->chk_delete_source->setDisabled(false);
-        }
+        }     
     } else if (type == 4) { // 格式错误
         QMessageBox::information(this, "警告!致命错误!", "视频格式"+strMessage+"不支持,程序即将退出");
         QApplication::exit();
@@ -124,12 +127,14 @@ void VideoConvert::on_pushButton_update_clicked()
 {
     QString appPath = QCoreApplication::applicationFilePath();
     QString appVersion = QCoreApplication::applicationVersion();
+
     QString appUpdateUrl = "http://127.0.0.1:8000/media/upfile/soft_update_20211228163745_306.json";
-    QProcess process;
+
     QString strExe("");
     strExe = "UpdateSoft.exe";
 
     QJsonObject json;
+    json.insert("appPID", QCoreApplication::applicationPid());
     json.insert("appName", windowTitle());
     json.insert("appPath", appPath);
     json.insert("appVersion", appVersion);
@@ -140,6 +145,5 @@ void VideoConvert::on_pushButton_update_clicked()
 
     QStringList arguments;
     arguments << byteArray;
-    process.startDetached(strExe, arguments);
-
+    QProcess::startDetached(strExe, arguments);
 }

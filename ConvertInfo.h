@@ -55,7 +55,9 @@ public:
     QString join(QString path1, QString path2);
     bool parseJson(QString filePath, st_convert_info& stConvertInfo);
     void init();
-
+    void setIs2MP3(bool bChecked) {
+        m2Mp3Checked = bChecked;
+    }
 protected:
     void run(); // 新线程入口
 signals:
@@ -65,4 +67,5 @@ public:
     st_convert_info     stConvertInfo;
     int m_floor; // 层数
     QString m_outDir;
+    bool m2Mp3Checked; // 是否转换为Mp3
 };

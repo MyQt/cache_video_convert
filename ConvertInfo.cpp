@@ -306,10 +306,10 @@ void Video_Convert::run()
        }
        QString standardOutput("");
        if (bCommand) { // 调用外部程序
-           QProcess* process = new QProcess(this);
+           QProcess* process = new QProcess(nullptr);
            process->setReadChannel(QProcess::StandardOutput);
            process->setProcessChannelMode(QProcess::MergedChannels);
-           process->close();
+
            process->start(command);
            if (!process->waitForStarted(-1)) {
                emit updateUI(5, outFile+"\n启动合并失败",index);
@@ -320,10 +320,33 @@ void Video_Convert::run()
                return;
            }
            standardOutput = process->readAllStandardOutput();
+            if (m2Mp3Checked) { // 转换mp3
+                process->start("ffmpeg -i "+outFile+".mp4"+" -b:a 64k "+outFile+".mp3");
+                if (!process->waitForStarted(-1)) {
+                    emit updateUI(5, outFile+"\n转换音频mp3失败",index);
+                    return;
+                }
+                if (!process->waitForFinished(-1)) {
+                    emit updateUI(6, outFile+"\n转换音频mp3失败",index);
+                    return;
+                }
+                // 删除mp4源文件
+                QFile::remove(outFile+".mp4");
+                standardOutput += process->readAllStandardOutput();
+            }
+            delete process;
        }
 
        // 当前合并完成
-       emit updateUI(2, video_info._title+"/"+video_info._part + " " +"合并完成!"+"合并输出信息:\n" + standardOutput+"\n", index);
+       QString alertTypeMessage;
+       if (m2Mp3Checked) {
+           alertTypeMessage = "合并并转换mp3完成! 输出信息:\n";
+       } else
+       {
+           alertTypeMessage = "合并完成! 输出信息:\n";
+       }
+       emit updateUI(2, video_info._title+"/"+video_info._part + " " +alertTypeMessage + standardOutput+"\n", index);
+
        index++;
     }
     // 删除中间件
