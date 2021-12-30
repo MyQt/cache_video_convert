@@ -92,7 +92,9 @@ void VideoConvert::on_btn_go_clicked()
 void VideoConvert::UpdateUI(int type, QString strMessage, int index)
 {
     if (type == 1 || type == 2) {
-        ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(index, 0)));
+        if (type == 2) {
+            ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(index, 0)));
+        }
         setWindowTitle(strMessage);
 
     } else if(type == 3) {

@@ -321,7 +321,7 @@ void Video_Convert::run()
            }
            standardOutput = process->readAllStandardOutput();
             if (m2Mp3Checked) { // 转换mp3
-                process->start("ffmpeg -i "+outFile+".mp4"+" -b:a 64k "+outFile+".mp3");
+                process->start("ffmpeg -i "+outFile+".mp4 "+outFile+".mp3");
                 if (!process->waitForStarted(-1)) {
                     emit updateUI(5, outFile+"\n转换音频mp3失败",index);
                     return;
@@ -341,6 +341,7 @@ void Video_Convert::run()
        QString alertTypeMessage;
        if (m2Mp3Checked) {
            alertTypeMessage = "合并并转换mp3完成! 输出信息:\n";
+
        } else
        {
            alertTypeMessage = "合并完成! 输出信息:\n";
