@@ -218,7 +218,7 @@ border-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy
         </sizepolicy>
        </property>
        <property name="text">
-        <string>将视频转换成mp3文件</string>
+        <string>将视频转换成aac文件</string>
        </property>
       </widget>
      </item>

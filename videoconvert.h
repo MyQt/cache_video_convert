@@ -10,7 +10,13 @@ namespace Ui {
 class VideoConvert;
 }
 
-
+enum convertState
+{
+    ecs_begin,
+    ecs_running,
+    ecs_error,
+    ecs_end
+};
 
 class VideoConvert : public QWidget
 {
@@ -34,6 +40,7 @@ private:
     Ui::VideoConvert *ui;
     QStringListModel m_itemModel;
     Video_Convert m_convert;
+    convertState mState; // 状态
 };
 
 #endif // VIDEOCONVERT_H

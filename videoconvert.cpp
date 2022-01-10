@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QDesktopServices>
 
 VideoConvert::VideoConvert(QWidget *parent) :
     QWidget(parent),
@@ -78,6 +79,9 @@ void VideoConvert::on_btn_choice_out_clicked()
 
 void VideoConvert::on_btn_go_clicked()
 {
+    if (mState == ecs_end) {
+        QDesktopServices::openUrl(QUrl("file:///"+ui->label_dir_out->text(), QUrl::TolerantMode));
+    }
     QDir dir;
     if(!dir.exists(ui->label_dir_load->text()) || !dir.exists(ui->label_dir_out->text())) {
         QMessageBox::information(this, "警告","请先选择加载和输入目录");
@@ -94,15 +98,19 @@ void VideoConvert::on_btn_go_clicked()
 void VideoConvert::UpdateUI(int type, QString strMessage, int index)
 {
     if (type == 1 || type == 2) {
+        mState = ecs_begin;
         ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(index, 0)));
         if (type == 2) {  
+            mState = ecs_running;
             ui->progress_convert->setValue(index+1);
         }
 
         setWindowTitle(strMessage);
 
     } else if(type == 3) {
-        ui->btn_go->setText("全部转换完成");
+        mState = ecs_end;
+        ui->btn_go->setText("全部转换完成,打开输出文件夹");
+        ui->btn_go->setDisabled(false);
         ui->list_file->setCurrentIndex(QModelIndex(m_itemModel.index(m_convert.m_convertList.length()-1, 0)));
         setWindowTitle("视频转换");
         if (ui->chk_delete_source->isChecked()) {
@@ -111,16 +119,19 @@ void VideoConvert::UpdateUI(int type, QString strMessage, int index)
         }     
         ui->progress_convert->setValue(index+1);
     } else if (type == 4) { // 格式错误
+        mState = ecs_error;
         QMessageBox::information(this, "警告!致命错误!", "视频格式"+strMessage+"不支持,程序即将退出");
         QApplication::exit();
         return;
     } else if (type == 5) // 启动外部程序ffmpeg失败
     {
+        mState = ecs_error;
         QMessageBox::information(this, "警告!致命错误!", strMessage);
         QApplication::exit();
         return;
     } else if (type == 6) // 执行外部程序ffmpeg失败
     {
+        mState = ecs_error;
         QMessageBox::information(this, "警告!致命错误!", strMessage);
         QApplication::exit();
         return;
@@ -141,6 +152,8 @@ void VideoConvert::on_pushButton_update_clicked()
     strExe = "UpdateSoft.exe";
 
     QJsonObject json;
+    QString appName = windowTitle();
+    qint64 appID = QCoreApplication::applicationPid();
     json.insert("appPID", QCoreApplication::applicationPid());
     json.insert("appName", windowTitle());
     json.insert("appPath", appPath);
