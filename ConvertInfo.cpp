@@ -346,11 +346,12 @@ void Video_Convert::run()
                    return;
                }
 
-               // 删除mp4源文件
+
                standardOutput = process->readAllStandardOutput();
                alertTypeMessage = "到mp3转换完成！";
                emit updateUI(2, video_info._title+"/"+video_info._part + " " +alertTypeMessage + standardOutput+"\n", index);
                delete process;
+               // 删除mp4源文件
                QFile::remove(outFile+".mp4");
            }
 

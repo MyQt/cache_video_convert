@@ -84,7 +84,7 @@ void VideoConvert::on_btn_go_clicked()
     }
     QDir dir;
     if(!dir.exists(ui->label_dir_load->text()) || !dir.exists(ui->label_dir_out->text())) {
-        QMessageBox::information(this, "警告","请先选择加载和输入目录");
+        QMessageBox::information(this, "警告","请先选择加载和输出目录");
         return;
     }
     ui->btn_go->setText("转换中");
